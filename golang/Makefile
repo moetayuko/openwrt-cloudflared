@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 GO_VERSION_MAJOR_MINOR:=1.22
-GO_VERSION_PATCH:=0
+GO_VERSION_PATCH:=0-devel-cf
 
 PKG_NAME:=golang
 PKG_VERSION:=$(GO_VERSION_MAJOR_MINOR)$(if $(GO_VERSION_PATCH),.$(GO_VERSION_PATCH))
@@ -18,9 +18,11 @@ GO_SOURCE_URLS:=https://dl.google.com/go/ \
                 https://mirrors.ustc.edu.cn/golang/ \
                 https://mirrors.nju.edu.cn/golang/
 
-PKG_SOURCE:=go$(PKG_VERSION).src.tar.gz
-PKG_SOURCE_URL:=$(GO_SOURCE_URLS)
-PKG_HASH:=4d196c3d41a0d6c1dfc64d04e3cc1f608b0c436bd87b7060ce3e23234e1f4d5c
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_SUBDIR:=go-$(PKG_VERSION)
+PKG_SOURCE_URL:=https://github.com/cloudflare/go.git
+PKG_SOURCE_VERSION:=cf490a05dcf9533250dd459ef70342e285ecbe06
+PKG_MIRROR_HASH:=b4d75893ea023eb5da8c58f215bf79596b242743fbf6821827e2d5251cfbf013
 
 PKG_MAINTAINER:=Jeffery To <jeffery.to@gmail.com>
 PKG_LICENSE:=BSD-3-Clause
@@ -103,11 +105,9 @@ BOOTSTRAP_1_21_BUILD_DIR:=$(HOST_BUILD_DIR)/.go_bootstrap_1.21
 
 include $(INCLUDE_DIR)/host-build.mk
 include $(INCLUDE_DIR)/package.mk
-include ../golang-compiler.mk
-include ../golang-package.mk
+include $(TOPDIR)/feeds/packages/lang/golang/golang-compiler.mk
+include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
 
-PKG_UNPACK:=$(HOST_TAR) -C "$(PKG_BUILD_DIR)" --strip-components=1 -xzf "$(DL_DIR)/$(PKG_SOURCE)"
-HOST_UNPACK:=$(HOST_TAR) -C "$(HOST_BUILD_DIR)" --strip-components=1 -xzf "$(DL_DIR)/$(PKG_SOURCE)"
 BOOTSTRAP_UNPACK:=$(HOST_TAR) -C "$(BOOTSTRAP_BUILD_DIR)" --strip-components=1 -xzf "$(DL_DIR)/$(BOOTSTRAP_SOURCE)"
 BOOTSTRAP_1_17_UNPACK:=$(HOST_TAR) -C "$(BOOTSTRAP_1_17_BUILD_DIR)" --strip-components=1 -xzf "$(DL_DIR)/$(BOOTSTRAP_1_17_SOURCE)"
 BOOTSTRAP_1_21_UNPACK:=$(HOST_TAR) -C "$(BOOTSTRAP_1_21_BUILD_DIR)" --strip-components=1 -xzf "$(DL_DIR)/$(BOOTSTRAP_1_21_SOURCE)"
