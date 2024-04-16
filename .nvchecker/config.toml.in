@@ -1,0 +1,18 @@
+[__config__]
+oldver = "cur_ver.json"
+newver = "new_ver.json"
+
+[cloudflared-ver]
+source = "regex"
+regex = 'PKG_VERSION\s*:=\s*(.*)'
+url = "https://raw.githubusercontent.com/openwrt/packages/${OP_VERSION}/net/cloudflared/Makefile"
+
+[cloudflared-rel]
+source = "regex"
+regex = 'PKG_RELEASE\s*:=\s*(.*)'
+url = "https://raw.githubusercontent.com/openwrt/packages/${OP_VERSION}/net/cloudflared/Makefile"
+
+[cloudflared]
+source = "combiner"
+from = ["cloudflared-ver", "cloudflared-rel"]
+format = "$1-r$2"

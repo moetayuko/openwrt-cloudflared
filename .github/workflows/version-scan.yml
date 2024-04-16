@@ -1,0 +1,50 @@
+name: Check new version
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  check:
+    name: Check and Update Version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Python 3
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install nvchecker
+        run: pip3 install nvchecker
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT }}
+
+      - name: Fetch upstream git reversion
+        id: op_version
+        run: |
+          curl "https://api.github.com/repos/openwrt/packages/commits?sha=master&path=net/cloudflared&per_page=1" |
+            jq -r ".[0].sha" | (read sha; echo sha=$sha >> $GITHUB_OUTPUT)
+
+      - name: Compare version
+        env:
+          OP_VERSION: ${{ steps.op_version.outputs.sha }}
+        working-directory: .nvchecker
+        id: version
+        run: |
+          envsubst < config.toml.in > config.toml
+          nvchecker -c config.toml
+          nvcmp -c config.toml --exit-status && exit || echo "ret=$?" >> $GITHUB_OUTPUT
+          nvtake -c config.toml --all
+          echo "new=$(jq -r .cloudflared new_ver.json)" >> $GITHUB_OUTPUT
+          echo $OP_VERSION > sha
+
+      - name: Commit new version
+        if: steps.version.outputs.ret == 4
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: update to ${{ steps.version.outputs.new }}"
+          tagging_message: ${{ steps.version.outputs.new }}

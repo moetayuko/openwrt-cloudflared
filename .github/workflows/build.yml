@@ -54,19 +54,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Fetch upstream git reversion
+        id: op_version
+        run: echo sha=$(cat .nvchecker/sha) >> $GITHUB_OUTPUT
+
       - name: Build Package
         uses: openwrt/gh-action-sdk@main
         env:
           ARCH: ${{ matrix.arch }}-main
           V: s
           IGNORE_ERRORS: n m y
+          NO_DEFAULT_FEEDS: 1
+          EXTRA_FEEDS: >-
+            src-git-full|base|https://github.com/openwrt/openwrt.git
+            src-git|packages|https://github.com/openwrt/packages.git^${{ steps.op_version.outputs.sha }}
           PACKAGES: cloudflared
-
-      - name: Finding failure logs
-        working-directory: logs/package/feeds
-        run: |
-          sed -ne 's!^ *ERROR: package/feeds/\(passwall[^ ]*\) .*$!\1!p' ../error.txt | sort -u | xargs -r find > ../../../logs.txt
-          cat ../../../logs.txt
 
       - name: Upload Output Folder
         uses: actions/upload-artifact@v4
