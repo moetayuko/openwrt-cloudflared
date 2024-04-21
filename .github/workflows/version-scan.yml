@@ -43,9 +43,9 @@ jobs:
         run: |
           envsubst < config.toml.in > config.toml
           nvchecker -c config.toml
-          nvcmp -c config.toml --exit-status && exit || echo "ret=$?" >> $GITHUB_OUTPUT
+          vers=$(nvcmp -c config.toml --exit-status -aj) && exit || echo "ret=$?" >> $GITHUB_OUTPUT
           nvtake -c config.toml --all
-          echo "new=$(jq -r .cloudflared new_ver.json)" >> $GITHUB_OUTPUT
+          jq -cr '.[] | select(.name=="cloudflared") | "new=\(.newver)"' <<< $vers >> $GITHUB_OUTPUT
           echo $OP_VERSION > sha
 
       - name: Commit new version
