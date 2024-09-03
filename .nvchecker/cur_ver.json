@@ -2,10 +2,10 @@
   "version": 2,
   "data": {
     "cloudflared": {
-      "version": "2024.8.3-r1"
+      "version": "2024.8.3-r2"
     },
     "cloudflared-rel": {
-      "version": "1"
+      "version": "2"
     },
     "cloudflared-ver": {
       "version": "2024.8.3"
