@@ -1,3 +1,4 @@
 *~
 /.nvchecker/config.toml
 /.nvchecker/new_ver.json
+/cloudflared/
