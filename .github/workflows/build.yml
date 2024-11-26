@@ -101,6 +101,17 @@ jobs:
           V: s
           IGNORE_ERRORS: n m y
 
+      - name: Append architecture to apk filename
+        if: matrix.ref == 'main'
+        working-directory: bin/packages/${{ matrix.arch }}
+        run: |
+          file=$(find . -name 'cloudflared*.apk')
+          if [ -n "$file" ] && [[ "$file" != *${{ matrix.arch }}* ]]; then
+            filename="${file%.*}"
+            extension="${file##*.}"
+            mv "$file" "$filename-${{ matrix.arch }}.$extension"
+          fi
+
       - name: Upload Output Folder
         uses: actions/upload-artifact@v4
         with:
