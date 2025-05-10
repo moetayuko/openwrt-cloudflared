@@ -2,13 +2,13 @@
   "version": 2,
   "data": {
     "cloudflared": {
-      "version": "2025.4.0-r1"
+      "version": "2025.4.2-r1"
     },
     "cloudflared-rel": {
       "version": "1"
     },
     "cloudflared-ver": {
-      "version": "2025.4.0"
+      "version": "2025.4.2"
     }
   }
 }
